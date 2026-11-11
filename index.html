@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Cartão de Visita Digital</title>
+<meta name="description" content="Cartão de visita digital — contatos, redes sociais e certificações." />
+<meta name="theme-color" content="#04060c" />
+
+<!-- Abre em tela cheia quando adicionado à tela inicial do celular -->
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="assets/icon-192.png" />
+<link rel="apple-touch-icon" href="assets/icon-192.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+<style>
+/* ============================================================
+   CARTÃO DE VISITA DIGITAL — tema neon azul / hacker futurista
+   Para personalizar, edite o objeto CONFIG no final do arquivo.
+   ============================================================ */
+
+:root{
+  --bg:        #04060c;
+  --panel:     #080e18;
+  --neon:      #22d3ee;
+  --neon-soft: #67e8f9;
+  --blue:      #3b82f6;
+  --text:      #e8f6ff;
+  --muted:     #7d93a9;
+  --line:      rgba(34,211,238,.22);
+  --radius:    26px;
+  --glow:      0 0 24px rgba(34,211,238,.28), 0 0 70px rgba(59,130,246,.16);
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+
+html,body{ height:100%; }
+
+body{
+  margin:0;
+  min-height:100dvh;
+  display:flex;
+  background:
+    radial-gradient(1200px 700px at 50% -10%, #0b1b2e 0%, transparent 60%),
+    radial-gradient(900px 600px at 110% 110%, #0a1630 0%, transparent 55%),
+    var(--bg);
+  color:var(--text);
+  font-family:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ---------- camadas de fundo ---------- */
+.bg-grid,
+.aurora,
+.scanlines{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+}
+
+.bg-grid{
+  background-image:
+    linear-gradient(rgba(34,211,238,.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34,211,238,.055) 1px, transparent 1px);
+  background-size:44px 44px;
+  mask-image:radial-gradient(circle at 50% 45%, #000 0%, rgba(0,0,0,.55) 45%, transparent 78%);
+  -webkit-mask-image:radial-gradient(circle at 50% 45%, #000 0%, rgba(0,0,0,.55) 45%, transparent 78%);
+  animation:gridDrift 24s linear infinite;
+}
+@keyframes gridDrift{ to{ background-position:44px 44px, 44px 44px; } }
+
+.aurora::before,
+.aurora::after{
+  content:"";
+  position:absolute;
+  width:min(70vw,620px);
+  aspect-ratio:1;
+  border-radius:50%;
+  filter:blur(90px);
+  opacity:.5;
+}
+.aurora::before{
+  top:-14%; left:-12%;
+  background:radial-gradient(circle, rgba(34,211,238,.55), transparent 65%);
+  animation:float1 16s ease-in-out infinite alternate;
+}
+.aurora::after{
+  bottom:-18%; right:-14%;
+  background:radial-gradient(circle, rgba(59,130,246,.55), transparent 65%);
+  animation:float2 19s ease-in-out infinite alternate;
+}
+@keyframes float1{ to{ transform:translate3d(9%, 7%, 0) scale(1.15); } }
+@keyframes float2{ to{ transform:translate3d(-8%, -6%, 0) scale(1.12); } }
+
+.scanlines{
+  background:repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,.045) 0px,
+    rgba(255,255,255,.045) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity:.5;
+  mix-blend-mode:overlay;
+}
+
+/* ---------- palco ---------- */
+.stage{
+  position:relative;
+  z-index:1;
+  margin:auto;
+  padding:clamp(10px, 2.6vw, 24px);
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  perspective:1400px;
+}
+
+/* ---------- cartão ---------- */
+.card{
+  position:relative;
+  width:min(100%, 430px);
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  background:
+    linear-gradient(165deg, rgba(13,24,40,.94) 0%, rgba(6,11,20,.97) 55%, rgba(8,16,28,.96) 100%);
+  box-shadow:
+    var(--glow),
+    inset 0 1px 0 rgba(255,255,255,.07),
+    inset 0 0 60px rgba(34,211,238,.05);
+  backdrop-filter:blur(16px) saturate(120%);
+  -webkit-backdrop-filter:blur(16px) saturate(120%);
+  overflow:hidden;
+  isolation:isolate;
+  animation:cardIn .85s cubic-bezier(.19,.9,.22,1) both;
+  transition:transform .55s cubic-bezier(.4,0,.2,1), opacity .45s ease, filter .45s ease;
+}
+
+@keyframes cardIn{
+  from{ opacity:0; transform:translateY(26px) scale(.965) rotateX(4deg); filter:blur(6px); }
+  to  { opacity:1; transform:none; filter:blur(0); }
+}
+
+/* brilho que percorre a borda */
+.card::after{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  border-radius:inherit;
+  padding:1px;
+  background:linear-gradient(120deg,
+    transparent 12%,
+    rgba(34,211,238,.85) 26%,
+    rgba(59,130,246,.75) 38%,
+    transparent 52%,
+    transparent 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite:exclude;
+  animation:borderSweep 7s linear infinite;
+  pointer-events:none;
+  z-index:3;
+}
+@keyframes borderSweep{
+  0%  { background-position:0% 50%; }
+  100%{ background-position:300% 50%; }
+}
+
+/* cantos estilo HUD */
+.corner{
+  position:absolute;
+  width:20px; height:20px;
+  border:1.5px solid rgba(34,211,238,.75);
+  pointer-events:none;
+  z-index:4;
+  filter:drop-shadow(0 0 6px rgba(34,211,238,.85));
+  opacity:.85;
+}
+.corner.tl{ top:10px; left:10px; border-right:0; border-bottom:0; border-radius:6px 0 0 0; }
+.corner.tr{ top:10px; right:10px; border-left:0; border-bottom:0; border-radius:0 6px 0 0; }
+.corner.bl{ bottom:10px; left:10px; border-right:0; border-top:0; border-radius:0 0 0 6px; }
+.corner.br{ bottom:10px; right:10px; border-left:0; border-top:0; border-radius:0 0 6px 0; }
+
+/* ---------- barra tipo terminal ---------- */
+.term-bar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:11px 14px;
+  border-bottom:1px solid rgba(34,211,238,.14);
+  background:linear-gradient(180deg, rgba(34,211,238,.07), transparent);
+  font-size:9.5px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:rgba(125,147,169,.9);
+}
+
+.dots{ display:flex; gap:5px; flex:0 0 auto; }
+.dots i{
+  width:7px; height:7px; border-radius:50%;
+  background:rgba(34,211,238,.35);
+  box-shadow:0 0 8px rgba(34,211,238,.5);
+}
+.dots i:nth-child(1){ background:#f87171; box-shadow:0 0 8px rgba(248,113,113,.6); }
+.dots i:nth-child(2){ background:#fbbf24; box-shadow:0 0 8px rgba(251,191,36,.6); }
+.dots i:nth-child(3){ background:#34d399; box-shadow:0 0 8px rgba(52,211,153,.6); }
+
+.term-path{
+  flex:1 1 auto;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  color:rgba(103,232,249,.75);
+}
+.term-path::before{ content:"> "; opacity:.6; }
+.caret{
+  display:inline-block;
+  width:6px; height:10px;
+  margin-left:3px;
+  background:var(--neon);
+  vertical-align:-1px;
+  animation:blink 1.15s steps(1) infinite;
+  box-shadow:0 0 8px var(--neon);
+}
+@keyframes blink{ 50%{ opacity:0; } }
+
+.term-actions{ display:flex; gap:6px; flex:0 0 auto; }
+
+.icon-btn{
+  display:grid;
+  place-items:center;
+  width:24px; height:24px;
+  border-radius:7px;
+  border:1px solid rgba(34,211,238,.2);
+  background:rgba(34,211,238,.05);
+  color:rgba(148,197,214,.9);
+  cursor:pointer;
+  padding:0;
+  transition:all .25s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.icon-btn:hover,
+.icon-btn:focus-visible{
+  color:#fff;
+  border-color:rgba(34,211,238,.7);
+  background:rgba(34,211,238,.16);
+  box-shadow:0 0 14px rgba(34,211,238,.45);
+  outline:none;
+}
+.icon-btn svg{ width:13px; height:13px; }
+.icon-btn.close:hover{
+  border-color:rgba(248,113,113,.8);
+  background:rgba(248,113,113,.18);
+  box-shadow:0 0 14px rgba(248,113,113,.5);
+}
+
+/* ---------- corpo ---------- */
+.card-body{
+  position:relative;
+  padding:clamp(18px, 5vw, 26px) clamp(16px, 5vw, 26px) clamp(18px, 5vw, 22px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:0;
+  z-index:2;
+}
+
+/* ---------- avatar ---------- */
+.avatar-wrap{
+  position:relative;
+  width:clamp(88px, 24vw, 112px);
+  aspect-ratio:1;
+  border-radius:50%;
+  padding:3px;
+  box-shadow:0 0 26px rgba(34,211,238,.45), 0 0 60px rgba(59,130,246,.22);
+  flex:0 0 auto;
+}
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+.avatar-wrap::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  background:conic-gradient(from 0deg, #22d3ee, #3b82f6 38%, #22d3ee 60%, rgba(34,211,238,.15) 76%, #22d3ee);
+  animation:spin 9s linear infinite;
+  z-index:0;
+}
+
+.avatar-inner{
+  position:relative;
+  width:100%; height:100%;
+  border-radius:50%;
+  overflow:hidden;
+  background:#060c16;
+  position:relative;
+  z-index:1;
+}
+.avatar{
+  width:100%; height:100%;
+  object-fit:cover;
+  display:block;
+  filter:saturate(1.02) contrast(1.03);
+}
+.avatar-inner::after{
+  content:"";
+  position:absolute; inset:0;
+  border-radius:50%;
+  box-shadow:inset 0 0 22px rgba(34,211,238,.35);
+  pointer-events:none;
+}
+
+.status{
+  position:absolute;
+  right:4px; bottom:6px;
+  width:15px; height:15px;
+  border-radius:50%;
+  background:#22d3ee;
+  border:2.5px solid #060d17;
+  box-shadow:0 0 12px #22d3ee;
+  z-index:3;
+}
+.status::after{
+  content:"";
+  position:absolute; inset:-4px;
+  border-radius:50%;
+  border:1px solid rgba(34,211,238,.6);
+  animation:pulse 2s ease-out infinite;
+}
+@keyframes pulse{
+  0%  { transform:scale(.8); opacity:.9; }
+  100%{ transform:scale(1.9); opacity:0; }
+}
+
+/* ---------- textos ---------- */
+.name{
+  font-family:"Orbitron", sans-serif;
+  font-weight:800;
+  font-size:clamp(17px, 4.9vw, 23px);
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  margin:14px 0 0;
+  text-align:center;
+  line-height:1.25;
+  background:linear-gradient(180deg, #ffffff 0%, #c8f5ff 55%, #5ad2ea 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  filter:drop-shadow(0 0 14px rgba(34,211,238,.5));
+  word-break:break-word;
+}
+
+.role{
+  margin:9px 0 0;
+  font-size:clamp(9px, 2.5vw, 10.5px);
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--neon-soft);
+  text-align:center;
+  line-height:1.6;
+  text-shadow:0 0 12px rgba(34,211,238,.5);
+}
+
+.tagline{
+  margin:12px 0 0;
+  font-size:clamp(11px, 2.9vw, 12.5px);
+  line-height:1.65;
+  color:var(--muted);
+  text-align:center;
+  max-width:32ch;
+  font-weight:300;
+}
+
+.divider{
+  width:100%;
+  height:1px;
+  margin:13px 0 11px;
+  background:linear-gradient(90deg, transparent, rgba(34,211,238,.45), transparent);
+  position:relative;
+}
+.divider::before,
+.divider::after{
+  content:"";
+  position:absolute;
+  top:-2px;
+  width:5px; height:5px;
+  border-radius:50%;
+  background:var(--neon);
+  box-shadow:0 0 10px var(--neon);
+}
+.divider::before{ left:6%; }
+.divider::after{ right:6%; }
+
+/* ---------- botões de contato ---------- */
+.actions{
+  width:100%;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+}
+
+.action{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:11px 12px;
+  border-radius:13px;
+  border:1px solid rgba(34,211,238,.2);
+  background:linear-gradient(180deg, rgba(20,36,56,.75), rgba(10,18,30,.75));
+  color:var(--text);
+  text-decoration:none;
+  font-size:clamp(10px, 2.7vw, 11.5px);
+  letter-spacing:.04em;
+  position:relative;
+  overflow:hidden;
+  transition:all .28s cubic-bezier(.4,0,.2,1);
+  -webkit-tap-highlight-color:transparent;
+}
+.action svg{
+  width:15px; height:15px;
+  flex:0 0 auto;
+  color:var(--neon);
+  filter:drop-shadow(0 0 6px rgba(34,211,238,.65));
+  transition:transform .28s ease, color .28s ease;
+}
+.action span{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+.action.wide{ grid-column:1 / -1; justify-content:center; }
+
+.action::before{
+  content:"";
+  position:absolute; inset:0;
+  background:linear-gradient(120deg, transparent 20%, rgba(34,211,238,.18) 50%, transparent 80%);
+  transform:translateX(-120%);
+  transition:transform .6s ease;
+}
+.action:hover::before,
+.action:focus-visible::before{ transform:translateX(120%); }
+
+.action:hover,
+.action:focus-visible{
+  border-color:rgba(34,211,238,.75);
+  background:linear-gradient(180deg, rgba(28,58,88,.9), rgba(12,26,44,.9));
+  box-shadow:0 0 20px rgba(34,211,238,.3), inset 0 0 18px rgba(34,211,238,.08);
+  transform:translateY(-2px);
+  outline:none;
+}
+.action:hover svg,
+.action:focus-visible svg{ transform:scale(1.12); color:#fff; }
+.action:active{ transform:translateY(0) scale(.985); }
+
+/* ---------- certificações ---------- */
+.certs{
+  width:100%;
+  margin-top:13px;
+}
+
+.certs-head{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:9px;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:rgba(34,211,238,.8);
+  margin-bottom:10px;
+}
+.certs-head .ln{
+  flex:1;
+  height:1px;
+  background:linear-gradient(90deg, rgba(34,211,238,.4), transparent);
+}
+.certs-head .count{
+  font-size:8.5px;
+  color:rgba(125,147,169,.8);
+  border:1px solid rgba(34,211,238,.22);
+  border-radius:20px;
+  padding:2px 7px;
+  letter-spacing:.12em;
+}
+
+.certs-grid{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:8px;
+}
+
+.cert{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  padding:9px;
+  border-radius:12px;
+  border:1px solid rgba(34,211,238,.16);
+  background:linear-gradient(180deg, rgba(16,30,48,.7), rgba(8,15,26,.7));
+  text-decoration:none;
+  color:inherit;
+  transition:all .28s ease;
+  -webkit-tap-highlight-color:transparent;
+  min-width:0;
+}
+.cert:hover,
+.cert:focus-visible{
+  border-color:rgba(34,211,238,.6);
+  box-shadow:0 0 18px rgba(34,211,238,.22);
+  transform:translateY(-2px);
+  outline:none;
+}
+
+.cert-img{
+  width:100%;
+  height:clamp(64px, 18.4vw, 88px);
+  border-radius:10px;
+  background:#ffffff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  border:1px solid rgba(34,211,238,.28);
+  box-shadow:0 2px 12px rgba(0,0,0,.35), inset 0 0 0 1px rgba(0,0,0,.03);
+  transition:box-shadow .28s ease, border-color .28s ease;
+}
+.cert-img img{
+  max-width:100%;
+  max-height:100%;
+  width:auto;
+  height:auto;
+  object-fit:contain;
+  display:block;
+}
+.cert:hover .cert-img,
+.cert:focus-visible .cert-img{
+  border-color:rgba(34,211,238,.8);
+  box-shadow:0 0 18px rgba(34,211,238,.35);
+}
+
+.cert-meta{ min-width:0; }
+.cert-name{
+  font-size:clamp(9px, 2.4vw, 10.2px);
+  letter-spacing:.02em;
+  color:#d7ecf7;
+  line-height:1.35;
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.cert-issuer{
+  display:block;
+  margin-top:2px;
+  font-size:8.4px;
+  letter-spacing:.02em;
+  color:rgba(125,147,169,.85);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* ---------- rodapé ---------- */
+.card-footer{
+  width:100%;
+  margin-top:12px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.btn-vcard{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  width:100%;
+  padding:11px;
+  border-radius:13px;
+  border:1px dashed rgba(34,211,238,.45);
+  background:rgba(34,211,238,.06);
+  color:var(--neon-soft);
+  font-family:inherit;
+  font-size:10px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:all .28s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-vcard svg{ width:14px; height:14px; }
+.btn-vcard:hover,
+.btn-vcard:focus-visible{
+  background:rgba(34,211,238,.15);
+  border-color:var(--neon);
+  color:#fff;
+  box-shadow:0 0 20px rgba(34,211,238,.3);
+  outline:none;
+}
+
+.signature{
+  text-align:center;
+  font-size:8px;
+  letter-spacing:.28em;
+  text-transform:uppercase;
+  color:rgba(125,147,169,.45);
+}
+
+/* ---------- tela "encerrado" ---------- */
+.closed{
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  text-align:center;
+  padding:clamp(44px, 14vw, 62px) 24px;
+}
+.closed{ animation:fadeIn .5s ease both; }
+@keyframes fadeIn{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:none; } }
+
+.closed p{
+  margin:0;
+  font-size:10.5px;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+  color:rgba(34,211,238,.85);
+  text-shadow:0 0 14px rgba(34,211,238,.5);
+}
+.closed small{
+  font-size:10px;
+  color:var(--muted);
+  letter-spacing:.06em;
+}
+.btn-reopen{
+  margin-top:4px;
+  padding:10px 18px;
+  border-radius:11px;
+  border:1px solid rgba(34,211,238,.5);
+  background:rgba(34,211,238,.1);
+  color:#fff;
+  font-family:inherit;
+  font-size:10px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:all .25s ease;
+}
+.btn-reopen:hover{ background:rgba(34,211,238,.22); box-shadow:0 0 20px rgba(34,211,238,.35); }
+
+.card.is-closed .card-body{ display:none; }
+.card.is-closed .closed{ display:flex; }
+.card.is-closed .term-actions .close{ display:none; }
+
+/* ---------- toast ---------- */
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:26px;
+  transform:translate(-50%, 20px);
+  padding:9px 16px;
+  border-radius:30px;
+  border:1px solid rgba(34,211,238,.45);
+  background:rgba(8,18,30,.95);
+  color:var(--neon-soft);
+  font-size:10.5px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  opacity:0;
+  pointer-events:none;
+  transition:all .35s cubic-bezier(.4,0,.2,1);
+  z-index:20;
+  box-shadow:0 0 24px rgba(34,211,238,.3);
+  max-width:88vw;
+  text-align:center;
+}
+.toast.show{ opacity:1; transform:translate(-50%, 0); }
+
+/* ---------- ajustes de tela ---------- */
+@media (max-width:380px){
+  :root{ --radius:22px; }
+  .term-path{ display:none; }
+  .term-bar{ justify-content:space-between; }
+  .actions{ gap:8px; }
+  .action{ padding:10px; gap:7px; }
+}
+
+@media (max-height:900px) and (min-width:520px){
+  .avatar-wrap{ width:90px; }
+  .card-body{ padding-top:16px; padding-bottom:16px; }
+  .name{ margin-top:12px; }
+  .divider{ margin:12px 0 11px; }
+  .certs{ margin-top:12px; }
+  .card-footer{ margin-top:10px; }
+  .signature{ display:none; }
+  .cert-img{ height:74px; }
+}
+
+@media (max-height:820px) and (min-width:520px){
+  .tagline{ display:none; }
+  .cert-img{ height:60px; }
+  .cert{ padding:7px; }
+  .avatar-wrap{ width:80px; }
+}
+
+@media (max-height:760px){
+  .tagline{ display:none; }
+  .avatar-wrap{ width:78px; }
+  .card-body{ padding-top:14px; }
+  .name{ font-size:19px; margin-top:10px; }
+  .role{ margin-top:6px; }
+  .divider{ margin:10px 0 9px; }
+  .action{ padding:9px 10px; }
+  .certs{ margin-top:11px; }
+  .cert{ padding:6px; }
+  .cert-img{ height:54px; }
+  .cert-issuer{ display:none; }
+  .card-footer{ margin-top:10px; }
+  .btn-vcard{ padding:9px; }
+  .signature{ display:none; }
+  .closed{ padding:34px 20px; }
+}
+
+@media (min-width:900px){
+  .card{ width:min(100%, 440px); }
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="aurora"></div>
+<div class="scanlines"></div>
+
+<main class="stage">
+  <section class="card" id="card" aria-label="Cartão de visita digital">
+    <span class="corner tl"></span>
+    <span class="corner tr"></span>
+    <span class="corner bl"></span>
+    <span class="corner br"></span>
+
+    <div class="term-bar">
+      <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="term-path">~/cartao-visita<span class="caret"></span></span>
+      <span class="term-actions">
+        <button class="icon-btn" id="fsBtn" type="button" title="Tela cheia" aria-label="Tela cheia">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+        </button>
+        <button class="icon-btn close" id="closeBtn" type="button" title="Fechar" aria-label="Fechar cartão">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </span>
+    </div>
+
+    <div class="card-body">
+      <div class="avatar-wrap">
+        <div class="avatar-inner">
+          <img class="avatar" id="avatar" alt="Foto de perfil" loading="eager" />
+        </div>
+        <span class="status" title="Disponível"></span>
+      </div>
+
+      <h1 class="name" id="name">Seu Nome</h1>
+      <p class="role" id="role">Seu Cargo · Sua Empresa</p>
+      <p class="tagline" id="tagline">Sua frase de apresentação em uma linha.</p>
+
+      <div class="divider" aria-hidden="true"></div>
+
+      <nav class="actions" id="actions" aria-label="Contatos"></nav>
+
+      <section class="certs">
+        <div class="certs-head">
+          <span>// certificações</span>
+          <span class="ln"></span>
+          <span class="count" id="certCount">0</span>
+        </div>
+        <div class="certs-grid" id="certsGrid"></div>
+      </section>
+
+      <footer class="card-footer">
+        <button class="btn-vcard" id="vcardBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
+          salvar contato
+        </button>
+        <span class="signature">digital business card</span>
+      </footer>
+    </div>
+
+    <div class="closed" id="closedScreen">
+      <p>// conexão encerrada</p>
+      <small>O cartão foi fechado.</small>
+      <button class="btn-reopen" id="reopenBtn" type="button">reabrir cartão</button>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ============================================================
+   1) CONFIGURAÇÃO — edite apenas este bloco
+   ============================================================ */
+const CONFIG = {
+  nome:     "Ademir Cardoso Costa",
+  cargo:    "Gerente",
+  empresa:  "Sicredi União MS",
+
+  // 1 linha de apresentação (aparece abaixo do cargo)
+  frase:    "Gestão com foco em pessoas, processos e tecnologia.",
+
+  // Foto: coloque o arquivo em assets/foto.jpg (ou troque o caminho)
+  foto:     "foto_perf.jpg",
+
+  // WhatsApp: apenas números, com DDI (55) + DDD. Ex.: 5511987654321
+  whatsapp: "5567998659849",
+  whatsappMensagem: "Olá! Encontrei seu cartão digital e gostaria de conversar.",
+
+  // Celular / telefone para ligação (aparece como botão "Celular")
+  celular:  "5567998648640",
+
+  email:    "contato@seudominio.com",
+
+  linkedin: "https://www.linkedin.com/in/gerenteademirccosta/",
+  instagram:"https://instagram.com/ademir_costa.40",
+
+  // Certificações: adicione quantas quiser.
+  // Coloque as imagens em assets/ (ex.: assets/certificado-1.png)
+  certificacoes: [
+    { nome: "CPA",        emissor: "ANBIMA · Certificação",   imagem: "CPA.png" },
+    { nome: "CPRO-I",     emissor: "ANBIMA · Investimento",   imagem: "CPROR.png" },
+    { nome: "CPRO-R",     emissor: "ANBIMA · Relacionamento", imagem: "CPROI.png" },
+    { nome: "COOP B-100", emissor: "Confebras · Profissional", imagem: "COOPB100.png" }
+  ]
+};
+
+/* ============================================================
+   2) Ícones
+   ============================================================ */
+const ICONS = {
+  whatsapp: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>',
+  email: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m3 7 8.2 5.7a1.4 1.4 0 0 0 1.6 0L21 7"/></svg>',
+  linkedin: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>',
+  instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5.4"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.6" cy="6.4" r="1.1" fill="currentColor" stroke="none"/></svg>'
+};
+
+/* ============================================================
+   3) Renderização
+  ============================================================ */
+
+ICONS.celular = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>';
+
+const $ = (sel) => document.querySelector(sel);
+
+const whatsappLink = "https://wa.me/" + String(CONFIG.whatsapp).replace(/\D/g, "") +
+  "?text=" + encodeURIComponent(CONFIG.whatsappMensagem || "");
+
+const ACTIONS = [
+  { label: "WhatsApp", href: whatsappLink,               icon: ICONS.whatsapp,  external: true  },
+  { label: "E-mail",   href: "mailto:" + CONFIG.email,   icon: ICONS.email,     external: false },
+  { label: "LinkedIn", href: CONFIG.linkedin,            icon: ICONS.linkedin,  external: true  },
+  { label: "Instagram",href: CONFIG.instagram,           icon: ICONS.instagram, external: true  },
+  { label: "Celular",  href: CONFIG.celular ? "tel:+" + String(CONFIG.celular).replace(/\D/g, "") : "",
+    icon: ICONS.celular, external: false, wide: true }
+].filter(a => a.href && !a.href.endsWith("+"));
+
+$("#name").textContent = CONFIG.nome;
+$("#role").textContent = [CONFIG.cargo, CONFIG.empresa].filter(Boolean).join(" · ");
+$("#tagline").textContent = CONFIG.frase || "";
+if (!CONFIG.frase) $("#tagline").style.display = "none";
+
+$("#actions").innerHTML = ACTIONS.map(a => `
+  <a class="action${a.wide ? " wide" : ""}" href="${a.href}"
+     ${a.external ? 'target="_blank" rel="noopener noreferrer"' : ''}
+     aria-label="${a.label}">
+    ${a.icon}<span>${a.label}</span>
+  </a>`).join("");
+
+/* --- avatar com fallback (se a foto não existir, mostra silhueta neon) --- */
+const FALLBACK_AVATAR = "data:image/svg+xml;utf8," + encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0e2135"/>
+      <stop offset="1" stop-color="#060d18"/>
+    </linearGradient>
+    <linearGradient id="s" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#67e8f9"/>
+      <stop offset="1" stop-color="#3b82f6"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" fill="url(#g)"/>
+  <circle cx="100" cy="78" r="30" fill="url(#s)" opacity=".9"/>
+  <path d="M100 118c-33 0-52 20-56 50h112c-4-30-23-50-56-50z" fill="url(#s)" opacity=".9"/>
+</svg>`);
+
+const avatarEl = $("#avatar");
+avatarEl.addEventListener("error", () => {
+  if (avatarEl.src !== FALLBACK_AVATAR) avatarEl.src = FALLBACK_AVATAR;
+});
+avatarEl.src = CONFIG.foto || FALLBACK_AVATAR;
+
+/* --- certificações com fallback em selo neon --- */
+function certFallback() {
+  return "data:image/svg+xml;utf8," + encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 60">
+  <defs>
+    <linearGradient id="c" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22d3ee"/>
+      <stop offset="1" stop-color="#3b82f6"/>
+    </linearGradient>
+  </defs>
+  <path d="M60 10l13 5.5 14-1 2.5 14 8.5 11-8.5 11-2.5 14-14-1-13 5.5-13-5.5-14 1-2.5-14-8.5-11 8.5-11 2.5-14 14 1z"
+        fill="none" stroke="url(#c)" stroke-width="2" opacity=".8"/>
+  <path d="M52 30l6 6 12-12" fill="none" stroke="url(#c)" stroke-width="3.2"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`);
+}
+
+const certs = Array.isArray(CONFIG.certificacoes) ? CONFIG.certificacoes : [];
+$("#certCount").textContent = String(certs.length).padStart(2, "0");
+
+$("#certsGrid").innerHTML = certs.map((c, i) => {
+  const img = c.imagem || "";
+  const fb = certFallback();
+  const content = `<img src="${img}" alt="${c.nome || 'Certificação'}" loading="lazy"
+        onerror="this.onerror=null;this.src='${fb}'">`;
+  const inner = `
+      <div class="cert-img">${content}</div>
+      <div class="cert-meta">
+        <span class="cert-name">${c.nome || "Certificação"}</span>
+        <span class="cert-issuer">${c.emissor || ""}</span>
+      </div>`;
+  return img
+    ? `<a class="cert" href="${img}" target="_blank" rel="noopener" title="Ver certificado">${inner}</a>`
+    : `<div class="cert">${inner}</div>`;
+}).join("");
+
+/* ============================================================
+   4) Interações
+   ============================================================ */
+const card = $("#card");
+const closedScreen = $("#closedScreen");
+const toastEl = $("#toast");
+
+let toastTimer;
+function toast(msg) {
+  toastEl.textContent = msg;
+  toastEl.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2200);
+}
+
+/* fechar / reabrir */
+function closeCard() {
+  card.classList.add("is-closed");
+  closedScreen.style.animation = "none";
+  void closedScreen.offsetWidth;
+  closedScreen.style.animation = "";
+}
+function openCard() {
+  card.classList.remove("is-closed");
+}
+
+$("#closeBtn").addEventListener("click", closeCard);
+$("#reopenBtn").addEventListener("click", openCard);
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeCard();
+});
+
+/* tela cheia (esconde a barra de navegação do navegador) */
+$("#fsBtn").addEventListener("click", async () => {
+  try {
+    if (!document.fullscreenElement) {
+      await document.documentElement.requestFullscreen();
+      toast("tela cheia ativada");
+    } else {
+      await document.exitFullscreen();
+      toast("tela cheia desativada");
+    }
+  } catch (err) {
+    toast("use 'adicionar à tela inicial'");
+  }
+});
+
+/* vCard — salvar contato */
+$("#vcardBtn").addEventListener("click", () => {
+  const nome = (CONFIG.nome || "").trim();
+  const partes = nome.split(/\s+/);
+  const sobrenome = partes.length > 1 ? partes.pop() : "";
+  const primeiro = partes.join(" ");
+
+  const vcf = [
+    "BEGIN:VCARD",
+    "VERSION:3.0",
+    `N:${sobrenome};${primeiro};;;`,
+    `FN:${nome}`,
+    CONFIG.empresa ? `ORG:${CONFIG.empresa}` : "",
+    CONFIG.cargo   ? `TITLE:${CONFIG.cargo}` : "",
+    CONFIG.whatsapp ? `TEL;TYPE=CELL:+${String(CONFIG.whatsapp).replace(/\D/g, "")}` : "",
+    CONFIG.celular ? `TEL;TYPE=CELL:+${String(CONFIG.celular).replace(/\D/g, "")}` : "",
+    CONFIG.email   ? `EMAIL;TYPE=INTERNET:${CONFIG.email}` : "",
+    CONFIG.linkedin ? `URL:${CONFIG.linkedin}` : "",
+    CONFIG.instagram ? `X-SOCIALPROFILE;TYPE=instagram:${CONFIG.instagram}` : "",
+    CONFIG.frase ? `NOTE:${CONFIG.frase}` : "",
+    "END:VCARD"
+  ].filter(Boolean).join("\r\n");
+
+  const blob = new Blob([vcf], { type: "text/vcard;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = (nome || "contato").replace(/\s+/g, "-").toLowerCase() + ".vcf";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+  toast("contato salvo");
+});
+
+/* clique no e-mail: copia também o endereço (atalho no celular) */
+document.querySelectorAll('.action[href^="mailto:"]').forEach(el => {
+  el.addEventListener("click", () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(CONFIG.email).then(
+        () => toast("e-mail copiado"),
+        () => {}
+      );
+    }
+  });
+});
+</script>
+</body>
+</html>
