@@ -930,7 +930,7 @@ const ACTIONS = [
 ].filter(a => a.href && !a.href.endsWith("+"));
 
 $("#name").textContent = CONFIG.nome;
-$("#role").textContent = [CONFIG.cargo, CONFIG.empresa].filter(Boolean).join(" · ");
+$("#role").textContent = [CONFIG.cargo, CONFIG.formação_1, CONFIG.formação_2].filter(Boolean).join(" · ");
 $("#tagline").textContent = CONFIG.frase || "";
 if (!CONFIG.frase) $("#tagline").style.display = "none";
 
